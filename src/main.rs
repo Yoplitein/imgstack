@@ -115,6 +115,12 @@ fn main() -> AResult<()> {
 	let outImg = match args.mode {
 		Mode::Sum | Mode::SumOverflow | Mode::Min | Mode::Max => {
 			let mut outImg = RgbImage::new(width, height);
+
+			if matches!(args.mode, Mode::Min) {
+				// initial state must be white
+				outImg.pixels_mut().for_each(|p| p.apply(|_| 0xFF));
+			}
+
 			let op = match args.mode {
 				Mode::Sum => |acc: u8, samp: u8| acc.saturating_add(samp),
 				Mode::SumOverflow => |acc: u8, samp: u8| acc.overflowing_add(samp).0,
